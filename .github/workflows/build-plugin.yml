@@ -33,7 +33,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build plugin
-        run: ./gradlew spotlessCheck compileJava buildPlugin --stacktrace
+        run: ./gradlew --no-configuration-cache spotlessCheck compileJava buildPlugin --stacktrace
 
       - name: List built plugin files
         shell: bash
