@@ -1,0 +1,7 @@
+.gradle
+.idea
+.intellijPlatform
+build
+src/test
+/.gradle-home
+/.run

@@ -1,0 +1,64 @@
+name: Build Plugin
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build IntelliJ Plugin
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build plugin
+        run: ./gradlew spotlessCheck compileJava buildPlugin --stacktrace
+
+      - name: List built plugin files
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          artifacts=(build/distributions/*.zip)
+          if [ "${#artifacts[@]}" -eq 0 ]; then
+            echo "No plugin zip was produced in build/distributions." >&2
+            exit 1
+          fi
+
+          {
+            echo "## Built plugin files"
+            echo
+            for artifact in "${artifacts[@]}"; do
+              size=$(du -h "$artifact" | cut -f1)
+              echo "- \`$artifact\` ($size)"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload plugin artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SourceRedirector-plugin
+          path: build/distributions/*.zip
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,18 @@
+<idea-plugin>
+    <id>com.hfstudio.SourceRedirector</id>
+    <name>SourceRedirector</name>
+    <vendor>HFStudio</vendor>
+    <description><![CDATA[
+        Redirects IntelliJ IDEA navigation from Multi-Release compiled library entries back to the attached source JAR root when the root source file exists.<br>
+        当 Multi-Release 依赖的版本化 class 会导致 IDEA 打开反编译视图时，本插件会优先跳转到已附加 sources JAR 的库根源码文件。
+        ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <resource-bundle>messages.SourceRedirectorBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <psi.clsCustomNavigationPolicy implementation="com.hfstudio.sourceredirector.MultiReleaseRootSourceNavigationPolicy"/>
+    </extensions>
+</idea-plugin>
